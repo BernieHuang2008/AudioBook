@@ -1,0 +1,58 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Controller -->
+<div style="position: fixed;top: 20px;float: right;right: 10px;z-index: 99999;">
+    <div class="SwitchIcon" style="user-select: none;">
+        <div class="toggle-button-wrapper">
+            <input type="checkbox" id="toggle-button" name="switch" onclick="SwitchClick()" checked="">
+            <label for="toggle-button" class="button-label">
+                <span class="circle">CN</span>
+                <span class="text on">ON</span>
+                <span class="text off">OFF</span>
+            </label>
+        </div>
+    </div>
+    <audio id="worda"></audio>
+</div>
+<div id='audio-control' style="z-index: 99999;"><span id="usedT">00:00</span>
+    <div
+        style="display: inline-block;width: calc(100% - 7em - 45px);height: 3px;margin-left: 10px;background: #bdd7ca;position: absolute;top: 50%;">
+        <div id="progress" style="background-color: #01b4ab;width: 0%;height: 100%;"></div>
+    </div>
+    <div id="btn" class="pause"></div><span id="totalT">--:--</span>
+</div>
+
+<!-- Audio -->
+<audio id="audio" src=""></audio>
+
+<!-- Article -->
+<div id="article">
+    <h1>Day <span id="daynumber"></span></h1>
+</div>
+
+<div id="cover" onclick="$(this).hide();if($('#btn').attr('class') == 'play'){$('#audio')[0].play();}"></div>
+
+<!-- Questions -->
+<div id="questions"></div>
+
+<!-- Foot Controller -->
+<br><br>
+<a href=''><button id="nextday">Next</button></a>
+<br><br><br>
+
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="style.css" type="text/css" />
+<script src="script.js"></script>
+<script>
+    const book_name = '{{ bookname }}';
+    window.book_name = book_name;
+
+    var day = window.location.href.split('?')[1] || localStorage.getItem(`reading-record-${book_name}`) || '1';
+    load(day);
+    $("#daynumber").text(day);
+    $("#nextday").parent().attr('href', book_name + '?' + (parseInt(day) + 1));
+    localStorage.setItem(`reading-record-${book_name}`, day);
+</script>

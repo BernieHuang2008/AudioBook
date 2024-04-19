@@ -1,0 +1,27 @@
+<div style="position: fixed;top: 20px;float: right;right: 10px;">
+    <div class="SwitchIcon" style="user-select: none;">
+        <div class="toggle-button-wrapper">
+            <input type="checkbox" id="toggle-button" name="switch" onclick="console.log(1)" checked="" style="">
+            <label for="toggle-button" class="button-label" onclick="SwitchClick()">
+                <span class="circle">CN</span>
+                <span class="text on">ON</span>
+                <span class="text off">OFF</span>
+            </label>
+        </div>
+    </div>
+    <audio id="worda"></audio>
+    <link rel="stylesheet" href="../style.css" type="text/css" />
+
+</div>
+<div id='audio-control'><span id="usedT">00:00</span>
+    <div
+        style="display: inline-block;width: calc(100% - 7em - 45px);height: 3px;margin-left: 10px;background: #bdd7ca;position: absolute;top: 50%;">
+        <div id="progress" style="background-color: #01b4ab;width: 0%;height: 100%;"></div>
+    </div>
+    <div id="btn" class="pause" onclick="play()"></div><span id="totalT"></span>
+</div>
+
+<!-- get word -->
+<div class='bubble' id='bubble'></div>
+
+<script src="../script.js"></script>
