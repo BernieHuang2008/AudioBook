@@ -68,7 +68,7 @@ def convert(day):
         command = "merge"
         if len(sentences) == 0:
             command = "new"
-        elif s[1][0].isupper() and s[1][0] not in 'I':
+        elif s[1][0].isupper() and s[1][0] not in 'I' and sentences[-1]["sentence"].count(" ") >= 20:
             command = "new"
         elif sentences[-1]["sentence"].count(" ") >= 50:
             command = "new"
