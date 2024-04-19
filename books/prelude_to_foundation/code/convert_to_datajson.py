@@ -53,7 +53,7 @@ def cvttime(time):
 
 
 def convert(day):
-    srtname = f"EN_prelude_to_foundation-{day}.srt"
+    srtname = f"prelude_to_foundation-{day}.srt"
     with open("C:/Users/BernieHuang/Downloads/" + srtname, "r") as f:
         lines = f.readlines()
 
@@ -66,7 +66,9 @@ def convert(day):
     sentences = []
     for s in srt:
         command = "merge"
-        if s[1][0].isupper() and s[1][0] not in 'I':
+        if len(sentences) == 0:
+            command = "new"
+        elif s[1][0].isupper() and s[1][0] not in 'I':
             command = "new"
         elif sentences[-1]["sentence"].count(" ") >= 50:
             command = "new"
@@ -136,5 +138,6 @@ def convert(day):
         json.dump(datajson, f, ensure_ascii=False, indent=4)
 
 
-for i in range(1, 4 + 1):
+for i in range(5, 63 + 1):
     convert(i)
+    print("done", i)
