@@ -16,12 +16,12 @@ def reader_ui(path):
 
 
 @app.route('/<book>/audio/<path>')
-def book_tokillamockingbird_audio(book, path):
+def book_req_audio(book, path):
     return send_from_directory("books/{}/audio".format(book), path)
 
 
 @app.route('/<book>/data/<path>')
-def book_tokillamockingbird_data(book, path):
+def book_req_data(book, path):
     return send_from_directory("books/{}/data".format(book), path)
 
 
