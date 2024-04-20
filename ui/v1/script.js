@@ -6,7 +6,7 @@ document.body.onkeydown = function (e) {
     var epr = $(".focus").previousSibling;
     var ene = $(".focus").nextSibling;
 
-    if (e.keyCode == 32) { $("#btn").onclick(); return false; }
+    if (e.keyCode == 32) { $("#btn").click(); return false; }
     if (e.keyCode == 38) { scrollToEle(nowfocus.previousSibling); nowfocus = nowfocus.previousSibling; return false; }
     if (e.keyCode == 40) { scrollToEle(nowfocus.nextSibling); nowfocus = nowfocus.nextSibling; return false; }
     if (e.keyCode == 37) { if ($("#btn").classList[0] == 'pause') { if (confirm("<-\nPrevious?")) window.location.href = `../Day ${pr}/Day ${pr}.html`; } else { playTime = bkPlayTime.slice(); xele = epr; audio.currentTime = Number(xele.dataset.timestamp); currt = 0; while ((currt = playTime.shift()) < Number(xele.dataset.timestamp)); playTime.unshift(currt); playTime.unshift(0); scrollToEle(xele); } }

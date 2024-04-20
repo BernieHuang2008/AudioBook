@@ -27,7 +27,7 @@ document.body.onkeydown = function (e) {
             }
             break;
         case ' ':
-            $("#btn")[0].onclick();
+            $("#btn").click();
             break;
         case 'c':
             SwitchClick();
@@ -392,14 +392,16 @@ function loadAudio(day) {
     function play() {
         $("#audio")[0].play();
         btn[0].classList = "play";
-        btn[0].onclick = pause;
+        btn[0].innerHTML = "<svg><use href='#play'></use></svg>";
+        btn.click(pause);
         grayAll();
     }
 
     function pause() {
         $("#audio")[0].pause();
         btn[0].classList = "pause";
-        btn[0].onclick = play;
+        btn[0].innerHTML = "<svg><use href='#pause'></use></svg>";
+        btn.click(play);
         ungrayAll();
     }
 

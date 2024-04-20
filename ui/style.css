@@ -5,11 +5,69 @@ html {
     --fontfamily: 'Charter', 'Georgia', 'Times New Roman', Times, serif;
 }
 
+@media screen and (max-width: 1000px) {
+    #desktop-controller {
+        display: none;
+    }
+
+    #mobile-controller {
+        display: block;
+    }
+
+    #audio-control {
+        top: 0 !important;
+        left: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        width: 100vw !important;
+    }
+
+    #audio-control>#btn {
+        position: fixed;
+        bottom: 200px;
+        zoom: 0.2;
+        left: calc(50% - 200px);
+        padding: 100px;
+        background: #f0fff7;
+        border-radius: 50%;
+        box-shadow: 15px 19px 42px 10px #0006;
+    }
+
+    #audio-control>#progress-bar {
+        width: calc(100% - 6em - 45px) !important;
+    }
+
+    p.sentence {
+        padding-right: 40px !important;
+    }
+}
 
 body {
     margin: 20px;
     /* font-family: var(--fontfamily); */
     user-select: none;
+}
+
+#mobile-controller {
+    display: none;
+}
+
+#controller-cnmean {
+    position: fixed;
+    top: 20px;
+    float: right;
+    right: 10px;
+    z-index: 99999;
+}
+
+#audio-control>#progress-bar {
+    display: inline-block;
+    width: calc(100% - 7em - 45px);
+    height: 3px;
+    margin-left: 10px;
+    background: #bdd7ca;
+    position: absolute;
+    top: 50%;
 }
 
 #article {
@@ -37,6 +95,7 @@ p.sentence {
     padding: 10px;
 
     width: 800px;
+    max-width: 100%;
 }
 
 h1 {
@@ -47,12 +106,9 @@ h2 {
     font-family: SimSun;
 }
 
-.pause {
-    background-image: url("data:image/svg+xml,%3Csvg t='1662091407259' class='icon' viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' p-id='1817' width='200' height='200'%3E%3Cpath d='M906.56 421.44L214.4 44.48A102.08 102.08 0 0 0 64 135.04v753.92a102.08 102.08 0 0 0 150.4 90.56l692.16-376.96a103.36 103.36 0 0 0 0-181.12z' fill='%23364F6B' p-id='1818'%3E%3C/path%3E%3C/svg%3E");
-}
-
-.play {
-    background-image: url("data:image/svg+xml,%3Csvg t='1662091545848' class='icon' viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' p-id='2137' width='200' height='200'%3E%3Cpath d='M64 32m160 0l64 0q160 0 160 160l0 640q0 160-160 160l-64 0q-160 0-160-160l0-640q0-160 160-160Z' fill='%23364F6B' p-id='2138'%3E%3C/path%3E%3Cpath d='M576 32m160 0l64 0q160 0 160 160l0 640q0 160-160 160l-64 0q-160 0-160-160l0-640q0-160 160-160Z' fill='%23364F6B' p-id='2139'%3E%3C/path%3E%3C/svg%3E");
+svg {
+    height: 200px;
+    width: 200px;
 }
 
 .focus {
