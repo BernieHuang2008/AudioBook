@@ -158,9 +158,8 @@ def find_same(qa, qb, ia, ib, WINDOW_SIZEa, WINDOW_SIZEb):
     raise ValueError("No same element found")
 
 
-def attatch_timestamp(sentences):
-
-    # reformat sentences, by the way
+def reformat_sentence(sentences):
+    # reformat sentences
     res = []
     for s in sentences:
         tokens = s
@@ -172,6 +171,9 @@ def attatch_timestamp(sentences):
             }
         )
 
+    return res
+
+def attatch_timestamp(sentences):
     # read all srt files
     srt = []
     for i in range(1, 5):
@@ -266,7 +268,7 @@ def attatch_timestamp(sentences):
         if len(ts) > same_index_ebk[0]:
             # already have timestamp
             if popq(i, j):
-                return res, ts
+                return ts
             continue
 
         same_index_srt = [tail_srt[0], tail_srt[1] - (10 - i) - same_index_ebk[1]]
@@ -282,16 +284,16 @@ def attatch_timestamp(sentences):
             # close to the start of the srt
             ts.append(srt[same_index_srt[0]][0])
             if popq(i, j):
-                return res, ts
+                return ts
         else:
             ts.append(srt[same_index_srt[0] + 1][0])
             if popq(i, j):
-                return res, ts
+                return ts
 
-    return res, ts
+    return ts
 
 
-def output(s, ts):
+def output(chap, s, ts):
     datajson = {
         "article_info": {
             "id": 14467,
@@ -308,12 +310,14 @@ def output(s, ts):
         "time_list"
     ] = ts
 
-    with open("data.json", "w") as f:
+    with open(f"books/prelude_to_foundation/data/{chap}.json", "w") as f:
         json.dump(datajson, f)
 
 
 contents = read_contents()
-chapter_token = read_chapter(contents[0])
-sentences = split_sentence(chapter_token)
-sentences, ts = attatch_timestamp(sentences)
-output(sentences, ts)
+
+for chap in range(len(contents)):
+    chapter_token = read_chapter(contents[chap])
+    sentences = split_sentence(chapter_token)
+    sentences = reformat_sentence(sentences)
+    output(chap+1, sentences, [1000000 for _ in range(len(sentences))])

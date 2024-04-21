@@ -1,30 +1,12 @@
 
 /* Key */
 document.body.onkeydown = function (e) {
-    var epr = $(".focus")[0].previousSibling;
-    var ene = $(".focus")[0].nextSibling;
-
     switch (e.key) {
         case 'ArrowUp':
-            if (epr) {
-                epr.classList.add('focus');
-                $(".focus")[1].classList.remove('focus');
-                scrollToEle(epr);
-
-                newtime = epr.getAttribute("timestamp");
-                $("#audio")[0].currentTime = newtime;
-                window.playTime.unshift(newtime);
-            }
+            e_arrowup();
             break;
         case 'ArrowDown':
-            if (ene) {
-                ene.classList.add('focus');
-                $(".focus")[0].classList.remove('focus');
-                scrollToEle(ene);
-
-                window.playTime.shift();
-                $("#audio")[0].currentTime = window.playTime[0];
-            }
+            e_arrowdown();
             break;
         case ' ':
             $("#btn").click();
@@ -38,11 +20,39 @@ document.body.onkeydown = function (e) {
         case 'r':
             speed(Number(prompt("New Speed:")));
             break;
+        case 'e':
+            editmode();
+            break;
         default:
             return;
     }
 
     e.preventDefault();
+}
+
+function e_arrowup() {
+    var epr = $(".focus")[0].previousSibling;
+    if (epr) {
+        epr.classList.add('focus');
+        $(".focus")[1].classList.remove('focus');
+        scrollToEle(epr);
+
+        newtime = epr.getAttribute("timestamp");
+        $("#audio")[0].currentTime = newtime;
+        window.playTime.unshift(newtime);
+    }
+}
+
+function e_arrowdown() {
+    var ene = $(".focus")[0].nextSibling;
+    if (ene) {
+        ene.classList.add('focus');
+        $(".focus")[0].classList.remove('focus');
+        scrollToEle(ene);
+
+        window.playTime.shift();
+        $("#audio")[0].currentTime = window.playTime[0];
+    }
 }
 
 /* Controller */
@@ -548,4 +558,79 @@ function translate_render_sn(sn, ele) {
     }
 
     $("#translate").css("top", top + "px");
+}
+
+
+/* Edit Mode */
+
+function editmode() {
+    // show the editor choice
+    $("body").toggleClass("editmode");
+    $("#editorchoice").css("display", "block");
+    function renderMultipleChoice(choices) {
+        var container = $("#multiple-choice-container");
+        container.empty();
+
+        for (var i = 0; i < choices.length; i++) {
+            var choice = choices[i];
+            var label = $("<label>");
+            var input = $("<input>");
+            input.attr("type", "checkbox");
+            input.attr("name", "multiple-choice");
+            input.attr("value", choice);
+            label.append(input);
+            label.append(choice);
+            container.append(label);
+        }
+
+        $("#editorchoice>button").click(function () {
+            var checked = $("input[name='multiple-choice']:checked");
+            var choice = [];
+            for (var i = 0; i < checked.length; i++) {
+                choice.push(checked[i].value);
+            }
+            submitedit(choice);
+        })
+    }
+    renderMultipleChoice(["playTime", "rushTime", "slowTime"]);
+
+    window.editor = {
+        playTime: [0],
+    }
+
+    // edit: playtime
+    window.e_arrowdown = function () {
+        var ene = $(".focus")[0].nextSibling;
+        if (ene) {
+            ene.classList.add('focus');
+            $(".focus")[0].classList.remove('focus');
+            scrollToEle(ene);
+
+            window.editor.playTime.push($("#audio")[0].currentTime);
+        }
+    }
+}
+
+
+function submitedit(choice) {
+    var data = {
+        meta: {
+            day: window.day,
+        }
+    };
+    choice.forEach(c => {
+        data[c] = window.editor[c];
+        console.log(c)
+    })
+
+    var url = `/${window.book_name}/edit`;
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        success: (data) => {
+            alert(data.status);
+        }
+    });
 }

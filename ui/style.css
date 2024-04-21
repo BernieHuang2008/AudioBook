@@ -48,6 +48,10 @@ body {
     user-select: none;
 }
 
+body.editmode {
+    background: #e6f4ed;
+}
+
 #mobile-controller {
     display: none;
 }
@@ -153,6 +157,10 @@ svg {
     color: white;
     font-weight: bold;
     font-size: 20;
+}
+
+#editorchoice {
+    display: none;
 }
 
 #questions {
