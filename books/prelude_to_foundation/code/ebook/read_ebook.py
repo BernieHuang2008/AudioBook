@@ -166,6 +166,7 @@ def reformat_sentence(sentences):
         res.append(
             {
                 "id": 0,
+                "sentence": "".join([x["word"] for x in tokens]),
                 "data": tokens,
                 "proper_noun_hash": {},
             }
@@ -173,124 +174,87 @@ def reformat_sentence(sentences):
 
     return res
 
-def attatch_timestamp(sentences):
-    # read all srt files
+
+def attatch_timestamp(sentences, srt_bias: int = 0):
+    ts = []
+
+    # read srt files
     srt = []
-    for i in range(1, 5):
-        fname = (
-            f"F:\\Data Set\\L\\000036\\audiobook\\srt\\prelude_to_foundation-{i}.srt"
-        )
+
+    for i in range(1, 15):
+        fname = f"C:/Users/BernieHuang/Downloads/prelude_to_foundation-{i}.srt"
         with open(fname, "r") as f:
             while f.readline():  # text id: ignore
                 time = cvttime(f.readline().split("-->")[0].strip())
                 sentence = f.readline().strip()
                 f.readline()  # empty line: ignore
-                srt.append((time, sentence.split(" ")))
+                srt.append((time, sentence))
 
-    WINDOW_SIZE_SRT = 30
-    WINDOW_SIZE_EBK = WINDOW_SIZE_SRT * 3
+    # merge timestamp
+    i = 0
+    srt_add = srt_bias
+    srt_round = 0
+    srt_last = ""
+    while i < len(sentences):
+        s1 = sentences[i]["sentence"]
+        s2 = srt_last + srt[i + srt_add][1]
+        for j in range(srt_round):
+            s2 = srt[i + srt_add - j - 1][1] + "" + s2
+        if srt_last and srt_round == -1:
+            srt_round = 0
+            s2 = srt_last
+            srt_add -= 1
 
-    ts = []
-    tail_srt = [0, 0]
-    tail_ebk = [0, 0]
-    window_srt = [""] * WINDOW_SIZE_SRT
-    window_srt_i = -1
-    window_ebk = [{"word": ""}] * WINDOW_SIZE_EBK
-    window_ebk_i = -1
+        # if i==50:
+        #     print(i, "False")
+        #     print(s1)
+        #     print(s2)
+        #     0/0
+        if i <= 283:
+            delta = 0.08
+        else:
+            delta = -0.05
 
-    def fillq(x):
-        nonlocal window_srt_i, window_ebk_i
-        if x == "srt":
-            # queue push
-            window_srt_i += 1
-            window_srt_i %= WINDOW_SIZE_SRT
-            window_srt[window_srt_i] = srt[tail_srt[0]][1][tail_srt[1]]
-
-            tail_srt[1] += 1
-            if tail_srt[1] >= len(srt[tail_srt[0]][1]):
-                tail_srt[0] += 1
-                tail_srt[1] = 0
-        if x == "ebk":
-            window_ebk_i += 1
-            window_ebk_i %= WINDOW_SIZE_EBK
-            if tail_ebk[0] >= len(sentences):
-                return True
-
-            window_ebk[window_ebk_i] = sentences[tail_ebk[0]][tail_ebk[1]]
-
-            tail_ebk[1] += 1
-            if tail_ebk[1] >= len(sentences[tail_ebk[0]]):
-                tail_ebk[0] += 1
-                tail_ebk[1] = 0
-
-    def popq(i, j):
-        for _ in range(i + 1):
-            if fillq("srt"):
-                return True
-        for _ in range(j + 1):
-            if fillq("ebk"):
-                return True
-
-    popq(WINDOW_SIZE_SRT - 1, WINDOW_SIZE_EBK - 1)
-    while 1:
-        i, j, s = find_same(
-            window_srt,
-            window_ebk,
-            window_srt_i,
-            window_ebk_i,
-            WINDOW_SIZE_SRT,
-            WINDOW_SIZE_EBK,
-        )
-        print(tail_srt, s)
-        if abs(i - j / 2) > 20:
-            window_ebk = list(map(lambda x: x["word"], window_ebk))
-            w_srt = window_srt[window_srt_i:] + window_srt[:window_srt_i]
-            w_ebk = window_ebk[window_ebk_i:] + window_ebk[:window_ebk_i]
-
-            print(
-                w_srt[i],
-                "\n",
-                w_ebk[j],
-                "\n",
-                " ".join(w_srt[:i] + [f"\033[1;34m{w_srt[i]}\033[0m"] + w_srt[i + 1 :]),
-                "\n",
-                "".join(w_ebk[:j] + [f"\033[1;34m{w_ebk[j]}\033[0m"] + w_ebk[j + 1 :]),
-                i,
-                j,
-            )
-            raise ValueError("No same element found")
-
-        same_index_ebk = [tail_ebk[0], tail_ebk[1] - (10 - j)]
-        while same_index_ebk[1] < 0:
-            same_index_ebk[0] -= 1
-            same_index_ebk[1] += len(sentences[same_index_ebk[0]])
-
-        if len(ts) > same_index_ebk[0]:
-            # already have timestamp
-            if popq(i, j):
-                return ts
+        if similar(s1, s2) < 7:
+            # if two sentences are similar, merge the timestamp
+            ts.append(srt[i + srt_add - srt_round][0] - delta)
+            print(i, "True")
+            srt_round = 0
+            srt_last = ""
+        # elif srt_round == 1:
+        #     print(i, "False")
+        #     print(s1)
+        #     print(s2)
+        #     0 / 0
+        elif len(s2) - len(s1) > 7:
+            # if srt is longer than the sentence, cut the srt
+            ts.append(srt[i + srt_add - srt_round][0] - delta)
+            print(i, "True")
+            srt_round = -1
+            srt_last = s2[len(s1) :]
+        else:
+            srt_add += 1
+            srt_round += 1
             continue
 
-        same_index_srt = [tail_srt[0], tail_srt[1] - (10 - i) - same_index_ebk[1]]
-        while same_index_srt[1] < 0:
-            same_index_srt[0] -= 1
-            same_index_srt[1] += len(srt[same_index_srt[0]][1])
-
-        if (
-            same_index_srt[1] < len(srt[same_index_srt[0]][1]) // 2
-            and ts
-            and ts[-1] < srt[same_index_srt[0]][0]
-        ):
-            # close to the start of the srt
-            ts.append(srt[same_index_srt[0]][0])
-            if popq(i, j):
-                return ts
-        else:
-            ts.append(srt[same_index_srt[0] + 1][0])
-            if popq(i, j):
-                return ts
+        i += 1
 
     return ts
+
+
+def split_ts(ts):
+    res = []
+
+    curr = 0
+    last = 0
+    while curr < len(ts):
+        if ts[curr] < ts[last]:
+            # means a new chapter
+            res.append(ts[last:curr])
+            last = curr
+        curr += 1
+
+    return res
 
 
 def output(chap, s, ts):
@@ -316,8 +280,36 @@ def output(chap, s, ts):
 
 contents = read_contents()
 
+"""Auto attatch tts timestamp"""
+# for chap in range(len(contents)):
+#     chapter_token = read_chapter(contents[chap])
+#     sentences = split_sentence(chapter_token)
+#     sentences = reformat_sentence(sentences)
+#     output(chap+1, sentences, [1000000 for _ in range(len(sentences))])
+
+"""Read full text"""
+# full_txt = ""
+# for chap in range(len(contents)):
+#     chapter_token = read_chapter(contents[chap])
+#     sentences = split_sentence(chapter_token)
+#     txt = '\n'.join([''.join([x['word'] for x in s]) for s in sentences])
+#     full_txt += txt
+#
+# with open("books/prelude_to_foundation/data/full.txt", "w") as f:
+#     f.write(full_txt)
+
+"""Attatch timestamp"""
+sents = []
+full_sent = []
 for chap in range(len(contents)):
+    day = chap + 1
     chapter_token = read_chapter(contents[chap])
     sentences = split_sentence(chapter_token)
     sentences = reformat_sentence(sentences)
-    output(chap+1, sentences, [1000000 for _ in range(len(sentences))])
+    sents.append(sentences)
+    full_sent += sentences
+
+full_ts = attatch_timestamp(full_sent, 0)
+ts = split_ts(full_ts)
+for day in range(1, 50):
+    output(day, sents[day - 1], ts[day - 1])

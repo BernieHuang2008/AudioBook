@@ -412,6 +412,7 @@ function loadAudio(day) {
         btn[0].classList = "pause";
         btn[0].innerHTML = "<svg><use href='#pause'></use></svg>";
         btn.click(play);
+        if (window.editor) window.editor.audioCut = $("#audio")[0].currentTime;
         ungrayAll();
     }
 
@@ -592,10 +593,12 @@ function editmode() {
             submitedit(choice);
         })
     }
-    renderMultipleChoice(["playTime", "rushTime", "slowTime"]);
+    renderMultipleChoice(["playTime", "audioCut", "sn"]);
 
     window.editor = {
         playTime: [0],
+        audioCut: null,
+        sn: {},
     }
 
     // edit: playtime
