@@ -3,7 +3,7 @@ import json
 
 
 def read_contents():
-    chapters = [f"part{i}.xhtml" for i in range(2, 51)]
+    chapters = [f"{i}.htm" for i in range(19)]
 
     return chapters
 
@@ -49,7 +49,7 @@ def tokenify(text, style=[]):
 
 def read_chapter(f_chapter):
 
-    with open(f"books/prelude_to_foundation/ebook/xhtml/{f_chapter}") as f:
+    with open(f"books/cave_of_steel/ebook/{f_chapter}") as f:
         chapter = BeautifulSoup(f.read(), "html.parser")
 
     paragraphs = chapter.select("p")
@@ -279,7 +279,6 @@ def output(chap, s, ts):
 
 
 contents = read_contents()
-contents = contents+['part51_split_000.xhtml', 'part51_split_001.xhtml']
 
 """Auto attatch tts timestamp"""
 # for chap in range(len(contents)):
@@ -310,12 +309,12 @@ for chap in range(len(contents)):
     sents.append(sentences)
     full_sent += sentences
 
-full_sent = full_sent[3000:]
+full_sent = full_sent
 
-with open("books/prelude_to_foundation/data/full.txt", "w") as f:
+with open("books/cave_of_steel/data/full.txt", "w") as f:
     f.write('\n'.join([s['sentence'] for s in full_sent]))
 
-full_ts = attatch_timestamp(full_sent, 0)
-ts = split_ts(full_ts)
-for day in range(1, 50):
-    output(day, sents[day - 1], ts[day - 1])
+# full_ts = attatch_timestamp(full_sent, 0)
+# ts = split_ts(full_ts)
+# for day in range(1, 50):
+#     output(day, sents[day - 1], ts[day - 1])
