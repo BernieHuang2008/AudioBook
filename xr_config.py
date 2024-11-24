@@ -8,7 +8,7 @@ _dir = lambda x: x.removesuffix("/")
 
 
 def read():
-    path = __file__.removesuffix("config.py") + "xread.conf"
+    path = __file__.removesuffix("xr_config.py") + "xread.conf"
     cf = configparser.ConfigParser()
     cf.read(path)
 
@@ -18,7 +18,9 @@ def read():
         "server/debug": _bool(cf.get("server", "debug")),
 
         "data/dir": _dir(cf.get("data", "data_dir")),
-        
     }
 
     return config
+
+if __name__=='__main__':
+    print(read())
