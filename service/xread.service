@@ -1,0 +1,12 @@
+[Unit]
+Description=X-Read App for BH-XProj
+After=network.target
+ 
+[Service]
+Type=simple
+ExecStart=/path/to/your_service
+ExecStop=/path/to/your_service stop
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
