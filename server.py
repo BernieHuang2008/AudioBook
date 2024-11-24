@@ -1,6 +1,9 @@
 from flask import Flask, send_from_directory, render_template, request, jsonify
 import json
 
+import xr_config
+CONFIG = xr_config.read()
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -18,19 +21,19 @@ def reader_ui(path):
 
 @app.route('/<book>/audio/<path>')
 def book_req_audio(book, path):
-    return send_from_directory("books/{}/audio".format(book), path)
+    return send_from_directory("{}/{}/audio".format(CONFIG['data/dir'], book), path)
 
 
 @app.route('/<book>/data/<path>')
 def book_req_data(book, path):
-    return send_from_directory("books/{}/data".format(book), path)
+    return send_from_directory("{}/{}/data".format(CONFIG['data/dir'], book), path)
 
 @app.route('/<book>/edit', methods=['POST'])
 def book_edit(book):
     data = request.json
     
     # START edit of datajson
-    with open("books/{}/data/{}.json".format(book, data['meta']['day']), "r") as f:
+    with open("{}/{}/data/{}.json".format(CONFIG['data/dir'], book, data['meta']['day']), "r") as f:
         datajson = json.load(f)
     
     # edit: playTime
@@ -39,11 +42,11 @@ def book_edit(book):
 
     
     # END edit of datajson
-    with open("books/{}/data/{}.json".format(book, data['meta']['day']), "w") as f:
+    with open("{}/{}/data/{}.json".format(CONFIG['data/dir'], book, data['meta']['day']), "w") as f:
         json.dump(datajson, f)
     
     return jsonify({"status": "ok"})
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host=CONFIG['server/host'], port=CONFIG['server/port'], debug=CONFIG['server/debug'])
