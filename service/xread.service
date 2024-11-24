@@ -1,12 +1,12 @@
 [Unit]
-Description=X-Read App for BH-XProj
+Description=X-Read App
 After=network.target
  
 [Service]
 Type=simple
-ExecStart=/path/to/service/start.sh
-ExecStop=/path/to/service/start.sh stop
+ExecStart=/bin/bash /path/to/service/start.sh
 Restart=on-failure
+KillMode=process
 
 [Install]
 WantedBy=multi-user.target
