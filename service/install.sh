@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # copy & chmod
-cp service/xread.service /etc/systemd/system/xread
+cp service/xread.service /etc/systemd/system/xread.service
 chmod 644 /etc/systemd/system/xread.service
 
 # reload systemd

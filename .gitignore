@@ -1,3 +1,7 @@
 books/**/*.mp3
 books/**/*.json
 books/**/*.xhtml
+
+service/start.sh
+service/xread.service
+xread.conf
