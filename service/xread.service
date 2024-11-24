@@ -4,8 +4,8 @@ After=network.target
  
 [Service]
 Type=simple
-ExecStart=/path/to/your_service
-ExecStop=/path/to/your_service stop
+ExecStart=/path/to/service/start.sh
+ExecStop=/path/to/service/start.sh stop
 Restart=on-failure
 
 [Install]

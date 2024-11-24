@@ -11,6 +11,5 @@ systemctl daemon-reload
 systemctl enable xread
 
 # run
-systemctl start your_service
-systemctl stop your_service
-systemctl status your_service
+systemctl start xread
+systemctl status xread
