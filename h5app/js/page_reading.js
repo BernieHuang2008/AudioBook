@@ -206,11 +206,11 @@ function render(sentences) {
 	}
 
 	// translate listener
-	$(".word.word-english").dblclick(function() {
+	$(".word.word-english").dblclick(function () {
 		var word = $(this).text();
 		translate_word(this, word);
 	});
-	$(".word.word-phrase").click(function() {
+	$(".word.word-phrase").click(function () {
 		var phrase = $(this).attr('phrase');
 		translate_phrase(this, phrase);
 	})
@@ -247,7 +247,7 @@ function render_questions() {
 		}
 	}
 
-	window.checkQAnswer = function(i, j) {
+	window.checkQAnswer = function (i, j) {
 		var q = $(".question")[i];
 		var choices = $(q).find('.question-choice');
 
@@ -366,9 +366,15 @@ function readJsonFile(name, success) {
 		})
 	}
 	else {
-		const base_url = "../doc/";
+		if (window.location.href.startsWith("file://")) {
+			const base_url = "../doc/";	 	 // for android app
+		}
+		else {
+			const base_url = "/resources/";	 // for server
+		}
+
 		const url = base_url + name;
-		
+
 		$.ajax({
 			url: url,
 			type: 'GET',
@@ -405,7 +411,7 @@ function load(day) {
 var is_audio_inited = false;
 
 function initAudio() {
-	$("#audio")[0].onloadedmetadata = function() {
+	$("#audio")[0].onloadedmetadata = function () {
 		var time = $("#audio")[0].duration;
 		var minute = time / 60;
 		var minutes = parseInt(minute);
@@ -423,7 +429,7 @@ function initAudio() {
 		$("#totalT").text(totalT);
 	}
 
-	$("#audio")[0].addEventListener("timeupdate", function() {
+	$("#audio")[0].addEventListener("timeupdate", function () {
 		time = $("#audio")[0].currentTime;
 
 		prog = ($("#audio")[0].currentTime / $("#audio")[0].duration) * 100 + "%";
@@ -734,7 +740,7 @@ function editmode() {
 			container.append(label);
 		}
 
-		$("#editorchoice>button").click(function() {
+		$("#editorchoice>button").click(function () {
 			var checked = $("input[name='multiple-choice']:checked");
 			var choice = [];
 			for (var i = 0; i < checked.length; i++) {
@@ -752,7 +758,7 @@ function editmode() {
 	}
 
 	// edit: playtime
-	window.e_arrowdown = function() {
+	window.e_arrowdown = function () {
 		var ene = $(".sentence.focus")[0].nextSibling;
 		if (ene) {
 			ene.classList.add('focus');

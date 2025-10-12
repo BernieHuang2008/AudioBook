@@ -22,7 +22,21 @@ function booksel_init() {
 	const dropdown = document.getElementById('book-dropdown');
 	dropdown.addEventListener('change', handleBookSelection);
 
-	plus_io_dir("_doc/books", render_dropdown);
+	if (window.location.href.startsWith("file://")) {
+		// For local file access (e.g., Android app)
+		plus_io_dir("_doc/books", render_dropdown);
+	}
+	else {
+		// For server access
+		fetch('/resources/booklist')
+			.then(response => response.json())
+			.then(data => {
+				render_dropdown(data.files);
+			})
+			.catch(error => {
+				console.error('Error fetching book list:', error);
+			});
+	}
 }
 
 function handleBookSelection() {

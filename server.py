@@ -8,23 +8,25 @@ app = Flask(__name__)
 
 @app.route('/')
 def reader_index():
-    return render_template("index.html")
+    return send_from_directory("h5app", "index.html")
 
 
 @app.route('/<path>')
-def reader_ui(path):
-    if '.' in path:
-        return send_from_directory("ui", path)
-    else:
-        return render_template("new.html", bookname=path.strip())
+def reader_static(path):
+    return send_from_directory("h5app", path)
 
 
-@app.route('/<book>/audio/<path>')
+@app.route('/resources/booklist')
+def booklist():
+    return jsonify(CONFIG['data/booklist'])
+
+
+@app.route('/resources/books/<book>/audio/<path>')
 def book_req_audio(book, path):
     return send_from_directory("{}/{}/audio".format(CONFIG['data/dir'], book), path)
 
 
-@app.route('/<book>/data/<path>')
+@app.route('/resources/books/<book>/data/<path>')
 def book_req_data(book, path):
     return send_from_directory("{}/{}/data".format(CONFIG['data/dir'], book), path)
 
