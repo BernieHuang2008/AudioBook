@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	</head>
+	<body>
+		<div id="page_loading" class="page">
+			Loading data ...
+		</div>
+		<div id="page_player" class="page" style="display: none;">
+			<div style="display: none;">
+				<svg id="pause" viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' width='200'
+					height='200'>
+					<path
+						d='M906.56 421.44L214.4 44.48A102.08 102.08 0 0 0 64 135.04v753.92a102.08 102.08 0 0 0 150.4 90.56l692.16-376.96a103.36 103.36 0 0 0 0-181.12z'
+						fill='#364F6B'></path>
+				</svg>
+				<svg id="play" viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' width='200'
+					height='200'>
+					<path
+						d='M64 32m160 0l64 0q160 0 160 160l0 640q0 160-160 160l-64 0q-160 0-160-160l0-640q0-160 160-160Z'
+						fill='#364F6B'></path>
+					<path
+						d='M576 32m160 0l64 0q160 0 160 160l0 640q0 160-160 160l-64 0q-160 0-160-160l0-640q0-160 160-160Z'
+						fill='#364F6B'></path>
+				</svg>
+			</div>
+
+			<!-- Controller -->
+			<div id="desktop-controller">
+				<div id="controller-cnmean">
+					<div class="SwitchIcon" style="user-select: none;">
+						<div class="toggle-button-wrapper">
+							<input type="checkbox" id="toggle-button" name="switch" onclick="SwitchClick()" checked="">
+							<label for="toggle-button" class="button-label">
+								<span class="circle">CN</span>
+								<span class="text on">ON</span>
+								<span class="text off">OFF</span>
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="mobile-controller">
+				<div id="sentence-control" class="mobile_control">
+					<button class="left-half" onclick="e_arrowup()">‹</button>
+					<button class="right-half" onclick="e_arrowdown()">›</button>
+				</div>
+				<div id="settings-control" class="mobile_control" onclick="openclose_settings()">
+					Settings
+				</div>
+				<div id="settings-menu" style="display: none;">
+					<div onclick="SwitchClick()">中文：关<span class="word-cnmean"
+							style="position: relative; left: -1em; background: #f0fff7;">开</span></div>
+					<div onclick="speed(Number(prompt('New Speed:')))">倍速：<span id="speed-value">1</span>x</div>
+					<hr>
+					<div onclick="resume_bookmark(currDay)">回到上次阅读</div>
+					<div id="gotosentence" onclick="goto_sentence_mode=1; this.classList.add('focus');">跳转句子</div>
+				</div>
+			</div>
+			<div id='audio-control' style="z-index: 99999;"><span id="usedT">00:00</span>
+				<div id="progress-bar">
+					<div id="progress" style="background-color: #01b4ab;width: 0%;height: 100%;"></div>
+				</div>
+				<div id="btn" class="pause"><svg>
+						<use href='#pause'></use>
+					</svg></div>
+				<span id="totalT">--:--</span>
+			</div>
+
+			<!-- Audio -->
+			<audio id="audio" src="" onloadedmetadata="console.log(111)"></audio>
+
+			<!-- Article -->
+			<div id="article">
+				<h1>Day <span id="daynumber"></span></h1>
+			</div>
+
+			<div id="cover" onclick="$(this).hide();if($('#btn').attr('class') == 'play'){$('#audio')[0].play();}">
+			</div>
+
+			<!-- Questions -->
+			<div id="questions"></div>
+
+			<!-- Editor -->
+			<div id="editorchoice">
+				<div id="multiple-choice-container"></div>
+				<button>Submit</button>
+			</div>
+
+			<!-- Foot Controller -->
+			<br><br>
+			<button id="nextday" onclick="nextDay()">Next</button>
+			<br><br><br>
+
+
+			<!-- Scripts -->
+			<script src="./js/jquery-3.6.0.min.js"></script>
+			<script src="./js/marked.min.js"></script>
+			
+			<script src="js/plus_utils.js"></script>
+			<link rel="stylesheet" href="./css/page_reading.css" type="text/css" />
+			<script src="./js/page_reading.js"></script>
+			<script src="./js/offline_mode.js"></script>
+			<script>
+				var currDay = 0;
+				var goto_sentence_mode = 0;
+
+				function selectBook(bookname, day) {
+					const book_name = bookname;
+					window.book_name = book_name;
+
+					var day = day || localStorage.getItem(`reading-record-${book_name}`) || '1';
+					currDay = Number(day);
+					load(day);
+
+					$("#daynumber").text(day);
+					localStorage.setItem(`reading-record-${book_name}`, day);
+				}
+
+				function nextDay() {
+					selectBook(window.book_name, currDay + 1);
+				}
+
+				function _autorun_() {
+					var urlSearchParams = new URLSearchParams(window.location.search);
+					var params = Object.fromEntries(urlSearchParams.entries());
+
+					if (params.book) {
+						console.log(JSON.stringify(params));
+						selectBook(params.book, params.day); // day=undefined if not exist.
+					} else {
+						window.location.href = "booksel.html";
+					}
+				}
+				
+				_autorun_();
+				
+				document.addEventListener('plusready', function() {
+					// _autorun_();
+					plus.key.addEventListener('backbutton', function() {
+						window.location.href="booksel.html";
+					}, false);
+				});
+			</script>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title></title>
+    <script type="text/javascript">
+
+        document.addEventListener('plusready', function () {
+            console.log("plusready事件已触发");
+            //console.log("所有plus api都应该在此事件发生后调用，否则会出现plus is undefined。")
+            plus_io_writeFile('test.txt', 'Hello World! This is a test.');
+            plus.key.addEventListener('backbutton', function () {
+                chpage('page_booksel');
+            }, false);
+            booksel_init();
+        });
+
+    </script>
+    <style>
+        .page {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="page_booksel" class="page" style="display: block;">
+        <div class="selection-container">
+            <h1>Start Reading</h1>
+            <div id="book-selector-list">
+                <label for="book-dropdown">选择书籍</label>
+                <select id="book-dropdown">
+                    <option value="">Loading Data ...</option>
+                </select>
+            </div>
+            <div id="day-selector-list">
+                <label for="day-selector">选择章节</label>
+                <input type="number" id="day-selector" min="1" value="1" placeholder="请输入章节号" />
+            </div>
+            <button class="start-reading-btn" onclick="start_reading_btn()">
+                <span>开始阅读</span>
+            </button>
+        </div>
+        <br><br>
+        <div class="selection-container">
+            <h1>Import Books</h1>
+            <p>Decompress your book data to the "books/" directory</p>
+        </div>
+    </div>
+    <div id="page_loading" class="page">
+        <p>Loading data ...</p>
+    </div>
+
+    <div id="page_player" class="page">
+        <div style="display: none;">
+            <svg id="pause" viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' width='200'
+                height='200'>
+                <path
+                    d='M906.56 421.44L214.4 44.48A102.08 102.08 0 0 0 64 135.04v753.92a102.08 102.08 0 0 0 150.4 90.56l692.16-376.96a103.36 103.36 0 0 0 0-181.12z'
+                    fill='#364F6B'></path>
+            </svg>
+            <svg id="play" viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' width='200'
+                height='200'>
+                <path d='M64 32m160 0l64 0q160 0 160 160l0 640q0 160-160 160l-64 0q-160 0-160-160l0-640q0-160 160-160Z'
+                    fill='#364F6B'></path>
+                <path d='M576 32m160 0l64 0q160 0 160 160l0 640q0 160-160 160l-64 0q-160 0-160-160l0-640q0-160 160-160Z'
+                    fill='#364F6B'></path>
+            </svg>
+        </div>
+
+        <!-- Controller -->
+        <div id="desktop-controller">
+            <div id="controller-cnmean">
+                <div class="SwitchIcon" style="user-select: none;">
+                    <div class="toggle-button-wrapper">
+                        <input type="checkbox" id="toggle-button" name="switch" onclick="SwitchClick()" checked="">
+                        <label for="toggle-button" class="button-label">
+                            <span class="circle">CN</span>
+                            <span class="text on">ON</span>
+                            <span class="text off">OFF</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-controller">
+			<div id="sentence-control" class="mobile_control">
+                <button class="left-half" onclick="e_arrowup()">‹</button>
+                <button class="right-half" onclick="e_arrowdown()">›</button>
+			</div>
+            <div id="settings-control" class="mobile_control" onclick="openclose_settings()">
+                Settings
+            </div>
+            <div id="settings-menu" style="display: none;">
+                <div onclick="SwitchClick()">中文：关<span class="word-cnmean" style="position: relative; left: -1em; background: #f0fff7;">开</span></div>
+                <div onclick="speed(Number(prompt('New Speed:')))">倍速：<span id="speed-value">1</span>x</div>
+            </div>
+        </div>
+        <div id='audio-control' style="z-index: 99999;"><span id="usedT">00:00</span>
+            <div id="progress-bar">
+                <div id="progress" style="background-color: #01b4ab;width: 0%;height: 100%;"></div>
+            </div>
+            <div id="btn" class="pause"><svg>
+                    <use href='#pause'></use>
+                </svg></div>
+            <span id="totalT">--:--</span>
+        </div>
+
+        <!-- Audio -->
+        <audio id="audio" src=""></audio>
+
+        <!-- Article -->
+        <div id="article">
+            <h1>Day <span id="daynumber"></span></h1>
+        </div>
+
+        <div id="cover" onclick="$(this).hide();if($('#btn').attr('class') == 'play'){$('#audio')[0].play();}"></div>
+
+        <!-- Questions -->
+        <div id="questions"></div>
+
+        <!-- Editor -->
+        <div id="editorchoice">
+            <div id="multiple-choice-container"></div>
+            <button>Submit</button>
+        </div>
+
+        <!-- Foot Controller -->
+        <br><br>
+        <button id="nextday" onclick="nextDay()">Next</button>
+        <br><br><br>
+
+
+        <!-- Scripts -->
+        <script src="./js/jquery-3.6.0.min.js"></script>
+        <link rel="stylesheet" href="./css/page_booksel.css" type="text/css" />
+        <link rel="stylesheet" href="./css/page_reading.css" type="text/css" />
+        <script src="./js/page_booksel.js"></script>
+        <script src="./js/page_reading.js"></script>
+        <script>
+            var currDay = 0;
+ 
+            function selectBook(bookname, day) {
+                const book_name = bookname;
+                window.book_name = book_name;
+
+                var day = day || localStorage.getItem(`reading-record-${book_name}`) || '1';
+                currDay = Number(day);
+                load(day);
+
+                $("#daynumber").text(day);
+                // $("#nextday").parent().attr('href', book_name + '?' + (parseInt(day) + 1));
+                localStorage.setItem(`reading-record-${book_name}`, day);
+            }
+
+            function nextDay() {
+                selectBook(window.book_name, currDay + 1);
+            }
+        </script>
+    </div>
+</body>
+
+</html>

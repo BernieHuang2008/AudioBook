@@ -1,0 +1,183 @@
+/* 主标题 */
+.page#page_booksel h1 {
+    color: #000;
+    font-size: 3rem;
+    font-weight: 300;
+    margin-bottom: 2rem;
+    text-align: center;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    letter-spacing: 2px;
+    position: relative;
+    z-index: 1;
+}
+
+/* 主容器 */
+.page#page_booksel .selection-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    max-width: 400px;
+    /* width: 100%; */
+    position: relative;
+    z-index: 1;
+}
+
+/* 书籍选择区域 */
+.page#page_booksel #book-selector-list {
+    margin-bottom: 1.5rem;
+}
+
+.page#page_booksel #book-selector-list label {
+    display: block;
+    color: #4a5568;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.page#page_booksel #book-dropdown {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #2d3748;
+    font-size: 1rem;
+    /* transition: all 0.3s ease; */
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234a5568'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 20px;
+    cursor: pointer;
+}
+
+.page#page_booksel #book-dropdown:hover {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.page#page_booksel #book-dropdown:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+/* 日期选择区域 */
+.page#page_booksel #day-selector-list {
+    margin-bottom: 2rem;
+}
+
+.page#page_booksel #day-selector-list label {
+    display: block;
+    color: #4a5568;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.page#page_booksel #day-selector {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #2d3748;
+    font-size: 1rem;
+    /* transition: all 0.3s ease; */
+}
+
+.page#page_booksel #day-selector:hover {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.page#page_booksel #day-selector:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+/* 开始阅读按钮 */
+.page#page_booksel .start-reading-btn {
+    width: 100%;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.page#page_booksel .start-reading-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    /* transition: left 0.5s; */
+}
+
+.page#page_booksel .start-reading-btn:hover::before {
+    left: 100%;
+}
+
+.page#page_booksel .start-reading-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.page#page_booksel .start-reading-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+    .page#page_booksel {
+        padding: 15px;
+    }
+    
+    .page#page_booksel h1 {
+        font-size: 2.2rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .page#page_booksel .selection-container {
+        padding: 1.5rem;
+        border-radius: 15px;
+    }
+    
+    .page#page_booksel #book-dropdown,
+    .page#page_booksel #day-selector {
+        padding: 10px 14px;
+    }
+    
+    .page#page_booksel .start-reading-btn {
+        padding: 12px 24px;
+        font-size: 1rem;
+    }
+}
+
+/* 加载状态样式 */
+.page#page_booksel #book-dropdown option:first-child {
+    color: #a0aec0;
+    font-style: italic;
+}
