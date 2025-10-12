@@ -7,8 +7,6 @@
 	</head>
 	<body>
 		<script type="text/javascript">
-			booksel_init();
-			
 			document.addEventListener('plusready', function() {
 				//console.log("所有plus api都应该在此事件发生后调用，否则会出现plus is undefined。")
 				console.log("plusready事件已触发");
@@ -49,5 +47,8 @@
 		<link rel="stylesheet" href="./css/page_booksel.css" type="text/css" />
 		<script src="js/plus_utils.js"></script>
 		<script src="./js/page_booksel.js"></script>
+		<script>
+			booksel_init();
+		</script>
 	</body>
 </html>
