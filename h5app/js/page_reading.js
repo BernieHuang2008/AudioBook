@@ -366,11 +366,11 @@ function readJsonFile(name, success) {
 		})
 	}
 	else {
+		var base_url;
 		if (window.location.href.startsWith("file://")) {
-			const base_url = "../doc/";	 	 // for android app
-		}
-		else {
-			const base_url = "/resources/";	 // for server
+			base_url = "../doc/";	 	 // for android app
+		} else {
+			base_url = "/resources/";	 // for server
 		}
 
 		const url = base_url + name;
