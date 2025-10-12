@@ -31,7 +31,7 @@ function booksel_init() {
 		fetch('/resources/booklist')
 			.then(response => response.json())
 			.then(data => {
-				render_dropdown(data.files);
+				render_dropdown(data.booklist);
 			})
 			.catch(error => {
 				console.error('Error fetching book list:', error);

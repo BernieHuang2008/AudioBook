@@ -31,7 +31,7 @@ def reader_css(path):
 
 @app.route("/resources/booklist")
 def booklist():
-    return jsonify(os.listdir(CONFIG["data/dir"]))
+    return jsonify({"booklist": os.listdir(CONFIG["data/dir"])})
 
 
 @app.route("/resources/books/<book>/audio/<path>")
