@@ -1,33 +1,36 @@
-// /* Key */
-// document.body.onkeydown = function (e) {
-//     switch (e.key) {
-//         case 'ArrowUp':
-//             e_arrowup();
-//             break;
-//         case 'ArrowDown':
-//             e_arrowdown();
-//             break;
-//         case ' ':
-//             $("#btn").click();
-//             break;
-//         case 'c':
-//             SwitchClick();
-//             break;
-//         case 'o':
-//             $(".SwitchIcon").style.display = ($(".SwitchIcon").style.display == "none" ? "block" : "none");
-//             break;
-//         case 'r':
-//             speed(Number(prompt("New Speed:")));
-//             break;
-//         case 'e':
-//             editmode();
-//             break;
-//         default:
-//             return;
-//     }
+/* Key */
+document.body.onkeydown = function (e) {
+    switch (e.key) {
+        case 'ArrowUp':
+            e_arrowup();
+            break;
+        case 'ArrowDown':
+            e_arrowdown();
+            break;
+        case ' ':
+            $("#btn").click();
+            break;
+        case 'c':
+            SwitchClick();
+            break;
+        case 'o':
+            $(".SwitchIcon").style.display = ($(".SwitchIcon").style.display == "none" ? "block" : "none");
+            break;
+        case 'r':
+            speed(Number(prompt("New Speed:")));
+            break;
+        case 'e':
+            editmode();
+            break;
+		case 'h':
+			alert("快捷键：\n↑/↓：切换句子\n空格：播放/暂停\nc：显示/隐藏中文释义\nr：调整播放速度\ns：显示/隐藏设置菜单\ne：编辑模式\nh：显示帮助");
+			break;
+        default:
+            return;
+    }
 
-//     e.preventDefault();
-// }
+    e.preventDefault();
+}
 
 function goto_sentence(targetEle) {
 	$(".sentence.focus")[0].classList.remove('focus');
@@ -506,9 +509,14 @@ function initAudio() {
 }
 
 function loadAudio(day) {
-	var prefix = "file:///storage/emulated/0/Android/data/hc.audiobook/apps/H5DEC33D6";
-	// var prefix = "file:///storage/emulated/0/Android/data/io.dcloud.HBuilder/apps/HBuilder";
-	var url = `${prefix}/doc/books/${window.book_name}/audio/${day}.mp3`;
+	if (window.location.href.startsWith("file://")) {
+		// For local file access (Android app)
+		var prefix = "file:///storage/emulated/0/Android/data/hc.audiobook/apps/H5DEC33D6/doc";
+	} else {
+		// For server access
+		var prefix = "/resources";
+	}
+	var url = `${prefix}/books/${window.book_name}/audio/${day}.mp3`;
 	$("#audio").attr('src', url);
 	// window.plus_audio = plus.audio.createPlayer(url);
 

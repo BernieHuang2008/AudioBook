@@ -1,6 +1,6 @@
 // auto detect
 $.ajax({
-	url: "https://reading.baicizhan.com",
+	url: "https://reading.baicizhan.com/api/query_word?word=test",
 	type: 'GET',
 	success: () => {},
 	error: () => {
