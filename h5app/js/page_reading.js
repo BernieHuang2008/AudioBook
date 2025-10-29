@@ -595,7 +595,7 @@ function ask_ai_about_multiwords(wd1) {
 			$("#translate").addClass("expand-mode");
 			$("#ai-explain-more-area").html(`
 			<br><br><hr><br><br>
-			<center><u># <b><i>${wd1}</i></b> vs. <b><i>${wd1}</i></b> 有什么区别？</u></center>
+			<center><u># <b><i>${wd1}</i></b> vs. <b><i>${wd2}</i></b> 有什么区别？</u></center>
 			${marked.parse(data)}
 			<span class='badge'>AI Explained ✦</span>
 			`);
