@@ -73,6 +73,17 @@ function SwitchClick() {
 	localStorage.setItem("pref-cn-mean", onoffswitch.attr('checked'));
 }
 
+function SNSwitchClick() {
+	var onoffswitch = $("#sn-toggle-button");
+	if (onoffswitch.attr('checked')) {
+		$(".word-sn").hide();
+	} else {
+		$(".word-sn").show();
+	}
+	onoffswitch.attr('checked', !onoffswitch.attr('checked'));
+	localStorage.setItem("pref-sn", onoffswitch.attr('checked'));
+}
+
 function scrollToEle(x) {
 	scrollTo(0, x.offsetTop - window.innerHeight / 2 + x.offsetHeight / 2)
 }
@@ -86,6 +97,7 @@ function speed(s) {
 }
 
 function load_prefs() {
+	// 中文释义
 	var cnmean = localStorage.getItem("pref-cn-mean");
 	if (cnmean == 'true') {
 		$("#toggle-button").attr('checked', true);
@@ -94,6 +106,18 @@ function load_prefs() {
 		$("#toggle-button").attr('checked', false);
 		$(".word-cnmean").hide();
 	}
+
+	// 专有名词
+	var sns = localStorage.getItem("pref-sn");
+	if (sns == 'true') {
+		$("#sn-toggle-button").attr('checked', true);
+		$(".word-sn").show();
+	} else {
+		$("#sn-toggle-button").attr('checked', false);
+		$(".word-sn").hide();
+	}
+
+	// speed
 	var _speed = Number(localStorage.getItem("pref-reading-speed")) || 1;
 	speed(_speed);
 }

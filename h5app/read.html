@@ -42,6 +42,18 @@
 						</div>
 					</div>
 				</div>
+				<div id="controller-sn">
+					<div class="SwitchIcon" style="user-select: none;">
+						<div class="toggle-button-wrapper">
+							<input type="checkbox" id="sn-toggle-button" name="switch" onclick="SNSwitchClick()" checked="">
+							<label for="sn-toggle-button" class="button-label">
+								<span class="circle">SN</span>
+								<span class="text on">ON</span>
+								<span class="text off">OFF</span>
+							</label>
+						</div>
+					</div>
+				</div>
 			</div>
 			<div id="mobile-controller">
 				<div id="sentence-control" class="mobile_control">
@@ -53,6 +65,8 @@
 				</div>
 				<div id="settings-menu" style="display: none;">
 					<div onclick="SwitchClick()">中文：关<span class="word-cnmean"
+							style="position: relative; left: -1em; background: #f0fff7;">开</span></div>
+					<div onclick="SNSwitchClick()">专有名词：关<span class="word-sn"
 							style="position: relative; left: -1em; background: #f0fff7;">开</span></div>
 					<div onclick="speed(Number(prompt('New Speed:')))">倍速：<span id="speed-value">1</span>x</div>
 					<hr>
