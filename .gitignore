@@ -5,3 +5,5 @@ books/**/*.xhtml
 service/start.sh
 service/xread.service
 xread.conf
+
+__pycache__/
