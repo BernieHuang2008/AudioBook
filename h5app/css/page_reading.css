@@ -170,6 +170,10 @@ p.sentence {
 	max-width: 100%;
 }
 
+body.mode-wenyan span.word-english {
+	margin: 0 4px;
+}
+
 span.word-sn {
 	position: relative;
 }
@@ -499,6 +503,7 @@ text {
 	padding: 20px;
 	border-radius: 10px;
 	width: max-content;
+	max-height: 50%;
 	max-width: calc(100vw - 40px);
 	min-width: 500px;
 	margin: auto;
@@ -507,6 +512,7 @@ text {
 	line-height: 1.5;
 	display: flex;
 	flex-direction: column;
+	overflow-y: auto;
 }
 
 #translate.expand-mode {
@@ -519,11 +525,11 @@ text {
 	margin-bottom: 10px;
 }
 
-#translate-audio {
+.translate-audio {
 	display: flex;
 }
 
-#translate-audio span {
+.translate-audio span {
 	cursor: pointer;
 	background-color: #c3ded5;
 	border-radius: 2px;
@@ -531,12 +537,12 @@ text {
 	margin-left: 1ch;
 }
 
-#translate-audio span:hover {
+.translate-audio span:hover {
 	color: #009688;
 	text-decoration: underline;
 }
 
-#translate-audio span::before {
+.translate-audio span::before {
 	font-size: 12;
 	color: #697970;
 	position: relative;

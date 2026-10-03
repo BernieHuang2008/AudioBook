@@ -1,6 +1,8 @@
 from flask import Flask, send_from_directory, render_template, request, jsonify
 import json
 import os
+from urllib.parse import quote
+import requests
 
 import xr_config
 
@@ -17,6 +19,29 @@ def reader_index():
 @app.route("/<path>")
 def reader_static(path):
     return send_from_directory("h5app", path)
+
+
+@app.route("/api/wenyan_qword")
+def wenyan_qword():
+    word = request.args.get("word")[:4]
+    if not word:
+        return jsonify({"error": "Missing 'word' parameter"}), 400
+
+    url = "http://www.dushan.net/guhanyu/show.asp?q="+quote(word, encoding="gbk")
+    resp = requests.get(url)
+    x = resp.text
+    if "没有找到您要查找的汉字！" in x:
+        return jsonify({"error": "Word not found"}), 404
+
+    x=x[x.index('<div class="hr"></div>\r\n\t\t\t\t\t<p class="mt10">')+45:]
+    x=x[:x.index('\r\n\t\t\t\t\t<div class="hr"></div>')]
+
+    
+    response_data = {
+        "raw": x
+    }
+
+    return jsonify(response_data)
 
 
 @app.route("/js/<path>")

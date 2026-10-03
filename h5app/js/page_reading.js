@@ -1,35 +1,47 @@
+MODE = "WENYAN"   // "ENGLISH" or "WENYAN"
+
+const cixing = {
+	"动": "v.",
+	"名": "n.",
+	"形": "adj.",
+	"副": "adv."
+}
+function _cixing(x) {
+	return cixing[x] || x+"词.";
+}
+
 /* Key */
 document.body.onkeydown = function (e) {
-    switch (e.key) {
-        case 'ArrowUp':
-            e_arrowup();
-            break;
-        case 'ArrowDown':
-            e_arrowdown();
-            break;
-        case ' ':
-            $("#btn").click();
-            break;
-        case 'c':
-            SwitchClick();
-            break;
-        case 'o':
-            $(".SwitchIcon").style.display = ($(".SwitchIcon").style.display == "none" ? "block" : "none");
-            break;
-        case 'r':
-            speed(Number(prompt("New Speed:")));
-            break;
-        case 'e':
-            editmode();
-            break;
+	switch (e.key) {
+		case 'ArrowUp':
+			e_arrowup();
+			break;
+		case 'ArrowDown':
+			e_arrowdown();
+			break;
+		case ' ':
+			$("#btn").click();
+			break;
+		case 'c':
+			SwitchClick();
+			break;
+		case 'o':
+			$(".SwitchIcon").style.display = ($(".SwitchIcon").style.display == "none" ? "block" : "none");
+			break;
+		case 'r':
+			speed(Number(prompt("New Speed:")));
+			break;
+		case 'e':
+			editmode();
+			break;
 		case 'h':
 			alert("快捷键：\n↑/↓：切换句子\n空格：播放/暂停\nc：显示/隐藏中文释义\nr：调整播放速度\ns：显示/隐藏设置菜单\ne：编辑模式\nh：显示帮助");
 			break;
-        default:
-            return;
-    }
+		default:
+			return;
+	}
 
-    e.preventDefault();
+	e.preventDefault();
 }
 
 function goto_sentence(targetEle) {
@@ -227,6 +239,11 @@ function render(sentences) {
 				cnspan.text(`(${w.mean.trim()})`);
 				div.append(cnspan);
 			}
+
+			// mean2
+			if (w.mean2) {
+				span[0].dataset.mean2 = w.mean2.trim();
+			}
 		}
 
 		article.append(div);
@@ -305,6 +322,8 @@ function render_questions() {
 
 function loaddata(rawdata) {
 	window.rawdata = rawdata;
+	MODE = rawdata.article_info.mode || "ENGLISH";
+	document.body.classList.add("mode-" + MODE.toLowerCase());
 	var sentences = rawdata.article_info.sentences;
 
 	// 1. Parse words
@@ -318,6 +337,7 @@ function loaddata(rawdata) {
 				type: w.type,
 				style: w.style || [],
 				mean: w.mean || '',
+				mean2: w.mean2 || '',
 				phrase_id: w.phrase_id,
 				special_noun: w.proper_noun_key ? s.proper_noun_hash[w.proper_noun_key] : null,
 			};
@@ -557,6 +577,17 @@ function resume_bookmark(currDay) {
 /* Translate */
 
 function translate_word(ele, word) {
+	switch (MODE) {
+		case "ENGLISH":
+			translate_word_english(ele, word);
+			break;
+		case "WENYAN":
+			translate_word_wenyan(ele, word);
+			break;
+	}
+}
+
+function translate_word_english(ele, word) {
 	// SN word
 	if (ele.classList.contains('word-sn')) {
 		var sn = JSON.parse(ele.dataset.sn);
@@ -574,10 +605,240 @@ function translate_word(ele, word) {
 		dataType: 'json',
 		success: (data) => {
 			var mean = data;
-			translate_render_word(word, mean, ele);
+			translate_english_render_word(word, mean, ele);
 		}
 	});
 }
+
+
+function translate_english_render_word(word, mean, ele) {
+	var cover = $("#cover");
+	cover[0].innerHTML = `
+    <div id="translate" onclick="event.stopPropagation()">
+        <div id="translate-title">
+            <h3 id="translate-word">${word}</h3>
+            <div class="translate-audio">
+                <div id="trans-audio-uk"></div>
+                <div id="trans-audio-us"></div>
+            </div>
+        </div>
+        <div id="translate-mean"></div>
+		<div id="ai-word-explain-area">
+			<button onclick="ask_ai_about_word('${word}')">Word Relations</button>
+		</div>
+    </div>
+    `
+	// render mean
+	mean.mean_info.forEach(m => {
+		var div = $("<div>");
+		div.addClass('trans-mean');
+		div[0].innerHTML = `
+        <i>${m.type}</i>
+        <span>${m.means}</span>
+        `
+		$("#translate-mean").append(div);
+	})
+
+	// render audio
+	$("#trans-audio-uk")[0].innerHTML = `
+        <audio id="uk-audio" src="${mean.audio_info.uk.audio}" hidden></audio>
+        <span onclick="this.previousElementSibling.play()">${mean.audio_info.uk.accent}</span>
+    `
+	$("#trans-audio-us")[0].innerHTML = `
+        <audio id="us-audio" src="${mean.audio_info.us.audio}" hidden></audio>
+        <span onclick="this.previousElementSibling.play()">${mean.audio_info.us.accent}</span>
+    `
+
+	cover.show();
+
+	// height
+	var height = $("#translate")[0].offsetHeight;
+	var top = ele.offsetTop - window.scrollY + ele.offsetHeight;
+	if (top + height > window.innerHeight) {
+		top = ele.offsetTop - window.scrollY - height;
+	}
+
+	$("#translate").css("top", top + "px");
+}
+
+
+// WENYAN
+
+var gbk_sheet = null;
+function stringToGbk(str) {
+	if (gbk_sheet == null) {
+		const ranges = [
+			[0xA1, 0xA9, 0xA1, 0xFE],
+			[0xB0, 0xF7, 0xA1, 0xFE],
+			[0x81, 0xA0, 0x40, 0xFE],
+			[0xAA, 0xFE, 0x40, 0xA0],
+			[0xA8, 0xA9, 0x40, 0xA0],
+			[0xAA, 0xAF, 0xA1, 0xFE],
+			[0xF8, 0xFE, 0xA1, 0xFE],
+			[0xA1, 0xA7, 0x40, 0xA0],
+		]
+		const codes = new Uint16Array(23940)
+		let i = 0
+
+		for (const [b1Begin, b1End, b2Begin, b2End] of ranges) {
+			for (let b2 = b2Begin; b2 <= b2End; b2++) {
+				if (b2 !== 0x7F) {
+					for (let b1 = b1Begin; b1 <= b1End; b1++) {
+						codes[i++] = b2 << 8 | b1
+					}
+				}
+			}
+		}
+		const str = new TextDecoder('gbk').decode(codes)
+
+		// 编码表
+		gbk_sheet = new Uint16Array(65536);
+		for (let i = 0; i < str.length; i++) {
+			gbk_sheet[str.charCodeAt(i)] = codes[i]
+		}
+	}
+
+	var urlencoding = "";
+	for (let i = 0; i < str.length; i++) {
+		const code = str.charCodeAt(i)
+		urlencoding += "%" + gbk_sheet[code].toString(16).toUpperCase().padStart(2, "0");
+	}
+	return urlencoding;
+}
+
+function translate_word_wenyan(ele, word) {
+	// // SN word
+	// if (ele.classList.contains('word-sn')) {
+	// 	var sn = JSON.parse(ele.dataset.sn);
+	// 	translate_render_sn(sn, ele);
+	// 	return;
+	// }
+
+	var url = `/api/wenyan_qword?word=${word}`;
+	window.canContinue = true;
+	$("#audio")[0].pause();
+
+	$.ajax({
+		url: url,
+		type: 'GET',
+		dataType: 'json',
+		success: (data) => {
+			var mean = data;
+			translate_wenyan_render_word(word, mean, ele);
+		},
+		error: (xhr, status, error) => {
+			translate_wenyan_render_word(word, { raw: "未找到释义" }, ele);
+		}
+	});
+}
+
+
+function translate_wenyan_render_word(word, mean, ele) {
+	var cover = $("#cover");
+
+	if (mean.raw) {
+		var raw = mean.raw;
+
+		// parse html to text
+		var div = document.createElement("div");
+		div.style = "max-height: 0; overflow: hidden;";
+		document.body.appendChild(div);
+		div.innerHTML = raw;
+		raw = div.innerText;
+		div.remove();
+
+		lst = raw.split("\n");
+		var means = [{
+			type: "EMPTY",
+			means: "",
+			examples: []
+		}];
+		var last_cate = "means";
+		lst.forEach(line => {
+			line = line.trim();
+			if (line == "") return;
+
+			if (line[0] == "【") {
+				means.push({
+					type: "词",
+					means: line,
+					examples: []
+				});
+				last_cate = "means";
+			} else if (line[0] == "《") {
+				means[means.length - 1].examples.push(line);
+				last_cate = "examples";
+			} else if (/[a-züÜāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/.test(line[0])) {
+				means.push({
+					type: "accent",
+					means: line,
+					examples: []
+				});
+				last_cate = "means";
+			} else if (line.length > 1 && line[1] == "<") {
+				means.push({
+					type: _cixing(line.match(/<(.+?)>(.*)$/)[1]),
+					means: line.match(/<(.+?)>(.*)$/)[2],
+					examples: []
+				});
+				last_cate = "means";
+			} else {
+				if (last_cate == "examples") {
+					means[means.length - 1].examples[means[means.length - 1].examples.length - 1] += line;
+				} else {
+					means[means.length - 1][last_cate] += line;
+				}
+			}
+		})
+		means.shift(); // remove first empty
+		mean.mean_info = means;
+	}
+
+	cover[0].innerHTML = `
+    <div id="translate" onclick="event.stopPropagation()">
+        <div id="translate-title">
+            <h3 id="translate-word">${word}</h3>
+			<h4 id="translate-mean2">${ele.dataset.mean2}</h4>
+        </div>
+        <div id="translate-mean"></div>
+		<div id="ai-word-explain-area">
+			<button onclick="ask_ai_about_word('${word}')">Word Relations</button>
+		</div>
+    </div>
+    `
+	// render mean
+	mean.mean_info.forEach(m => {
+		var div = $("<div>");
+		if (m.type == "accent") {
+			div.addClass('translate-audio');
+			div[0].innerHTML = `<span>${m.means}</span>`;
+		} else {
+			div.addClass('trans-mean');
+			div[0].innerHTML = `
+			<i>${m.type}</i>
+			<span>${m.means}</span>
+			`
+		}
+		$("#translate-mean").append(div);
+	})
+
+	cover.show();
+
+	// height
+	var height = $("#translate")[0].offsetHeight;
+	var top = ele.offsetTop - window.scrollY;
+	if (top > window.innerHeight/2) {
+		// cover shows above the word
+		top -= height;
+		if (top < 0) top = 0;
+	} else {
+		// cover shows below the word
+		top += ele.offsetHeight;
+	}
+
+	$("#translate").css("top", top + "px");
+}
+
 
 function ask_ai_about_word(wd) {
 	var prompt = wd + "这个英文单词有什么意思？这些意思之间有什么关系？词源是什么？";
@@ -625,56 +886,6 @@ function ask_ai_about_multiwords(wd1) {
 			`);
 		}
 	})
-}
-
-function translate_render_word(word, mean, ele) {
-	var cover = $("#cover");
-	cover[0].innerHTML = `
-    <div id="translate" onclick="event.stopPropagation()">
-        <div id="translate-title">
-            <h3 id="translate-word">${word}</h3>
-            <div id="translate-audio">
-                <div id="trans-audio-uk"></div>
-                <div id="trans-audio-us"></div>
-            </div>
-        </div>
-        <div id="translate-mean"></div>
-		<div id="ai-word-explain-area">
-			<button onclick="ask_ai_about_word('${word}')">Word Relations</button>
-		</div>
-    </div>
-    `
-	// render mean
-	mean.mean_info.forEach(m => {
-		var div = $("<div>");
-		div.addClass('trans-mean');
-		div[0].innerHTML = `
-        <i>${m.type}</i>
-        <span>${m.means}</span>
-        `
-		$("#translate-mean").append(div);
-	})
-
-	// render audio
-	$("#trans-audio-uk")[0].innerHTML = `
-        <audio id="uk-audio" src="${mean.audio_info.uk.audio}" hidden></audio>
-        <span onclick="this.previousElementSibling.play()">${mean.audio_info.uk.accent}</span>
-    `
-	$("#trans-audio-us")[0].innerHTML = `
-        <audio id="us-audio" src="${mean.audio_info.us.audio}" hidden></audio>
-        <span onclick="this.previousElementSibling.play()">${mean.audio_info.us.accent}</span>
-    `
-
-	cover.show();
-
-	// height
-	var height = $("#translate")[0].offsetHeight;
-	var top = ele.offsetTop - window.scrollY + ele.offsetHeight;
-	if (top + height > window.innerHeight) {
-		top = ele.offsetTop - window.scrollY - height;
-	}
-
-	$("#translate").css("top", top + "px");
 }
 
 function translate_phrase(ele, phrase) {
