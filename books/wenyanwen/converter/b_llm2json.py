@@ -110,7 +110,7 @@ def empty_audio_info():
 
 def convert(annotated_text):
     """将文言文注解文本转换为标准 JSON 结构"""
-    paragraphs = annotated_text.strip().split("\n\n")
+    paragraphs = annotated_text.strip().replace("\r\n", "\n").split("\n\n")
     sid = 0
 
     def process_paragraph(paragraph):
@@ -118,7 +118,7 @@ def convert(annotated_text):
 
         if "\n" in paragraph:
             origin, translation = paragraph.split("\n", 1)
-            data_items = parse_annotated_text(origin)
+            data_items = parse_annotated_text(paragraph.replace("\r\n", "\n").strip())
             data_items[-1]["mean"] = translation     # 在最后一个词条中添加译文作为 mean 字段
         else:
             origin = paragraph

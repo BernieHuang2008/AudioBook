@@ -347,7 +347,7 @@ for i in range(len(lst)):
 
             watch_clipboard(interval=0.2, callback=None)
 
-            ai_resp = pyperclip.paste()
+            ai_resp = pyperclip.paste().replace("\r\n", "\n").strip()
 
             jjj = b_llm2json.convert(ai_resp)
             with open("../data/{}/{}.json".format(BOOK_NAME, book_cnt), "w", encoding="utf-8") as f:
