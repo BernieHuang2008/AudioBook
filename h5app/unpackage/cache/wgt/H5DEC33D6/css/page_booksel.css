@@ -1,3 +1,10 @@
+html {
+	background-color: #d0ecde;
+	overflow-y: scroll;
+	scroll-behavior: smooth;
+	--fontfamily: 'Charter', 'Georgia', 'Times New Roman', Times, serif;
+}
+
 /* 主标题 */
 .page#page_booksel h1 {
     color: #000;
@@ -119,7 +126,7 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    /* transition */: all 0.3s ease;
     position: relative;
     overflow: hidden;
 }
